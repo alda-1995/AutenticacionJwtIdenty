@@ -1,5 +1,6 @@
 using AutenticacionJwtIdenty;
 using AutenticacionJwtIdenty.Context;
+using AutenticacionJwtIdenty.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("PermisoCrearUsuario", policy => policy.RequireClaim("Permission", "CrearUsuario"));
 });
 
 builder.Services.AddAuthentication(options =>
@@ -59,13 +61,27 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    try
+//    {
+//        //var context = scope.ServiceProvider.GetRequiredService<BdContext>();
+//        await RoleSeeder.SeedRoles(services);
+//    }
+//    catch (Exception ex)
+//    {
+//        throw;
+//    }
+//}
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-        //var context = scope.ServiceProvider.GetRequiredService<BdContext>();
-        await RoleSeeder.SeedRoles(services);
+        var context = scope.ServiceProvider.GetRequiredService<BdContext>();
+        await RolePermissionSeeder.SeedRolesAndPermissions(context);
     }
     catch (Exception ex)
     {

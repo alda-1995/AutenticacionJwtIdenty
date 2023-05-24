@@ -24,7 +24,8 @@ namespace AutenticacionJwtIdenty.Controllers
         }
 
         // GET: api/Grupo
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User")]
+        [Authorize(Policy = "PermisoCrearUsuario")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Grupo>>> GetGrupos()
         {

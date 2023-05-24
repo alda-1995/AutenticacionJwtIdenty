@@ -12,6 +12,26 @@ namespace AutenticacionJwtIdenty.Context
 
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Role>().ToTable("AspNetRoles");
+
+            builder.Entity<RolePermission>()
+                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Role)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(rp => rp.RoleId);
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Permission)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(rp => rp.PermissionId);
+        }
+
+        public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Grupo> Grupos { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
     }
 }
